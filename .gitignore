@@ -31,7 +31,7 @@ env.bak/
 venv.bak/
 
 # Database files
-*.db
+# *.db
 *.sqlite
 *.sqlite3
 
