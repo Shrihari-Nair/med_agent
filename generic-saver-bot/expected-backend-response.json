@@ -1,0 +1,220 @@
+{
+  "success": true,
+  "message": "Prescription processed successfully",
+  "data": {
+    "prescription_id": "presc_123456789",
+    "extracted_text": "Dr. John Smith\nPatient: Jane Doe\nDate: 08/08/2025\n\nPrescription:\n1. Tab Crestor 10mg - 1 tablet daily\n2. Tab Nexium 40mg - 1 tablet twice daily\n3. Tab Januvia 100mg - 1 tablet daily",
+    "medicines": [
+      {
+        "id": "med_001",
+        "prescribedName": "Crestor 10mg (Rosuvastatin)",
+        "brandedPrice": 850,
+        "composition": "Rosuvastatin Calcium 10mg",
+        "strength": "10mg",
+        "dosageForm": "Tablet",
+        "extractedText": "Tab Crestor 10mg",
+        "confidence": 0.95,
+        "genericAlternatives": [
+          {
+            "id": "gen_001_a",
+            "name": "Rosuvastatin 10mg (Rosuvas)",
+            "price": 120,
+            "manufacturer": "Sun Pharma",
+            "composition": "Rosuvastatin Calcium 10mg",
+            "strength": "10mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 150,
+            "expiryDate": "2026-12-31",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_001",
+              "pharmacyName": "MedPlus",
+              "distance": "0.5 km"
+            }
+          },
+          {
+            "id": "gen_001_b",
+            "name": "Rosuvastatin 10mg (Rosulip)",
+            "price": 135,
+            "manufacturer": "Cipla",
+            "composition": "Rosuvastatin Calcium 10mg",
+            "strength": "10mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 75,
+            "expiryDate": "2027-03-15",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_002",
+              "pharmacyName": "Apollo Pharmacy",
+              "distance": "1.2 km"
+            }
+          },
+          {
+            "id": "gen_001_c",
+            "name": "Rosuvastatin 10mg (Roseday)",
+            "price": 145,
+            "manufacturer": "USV Ltd",
+            "composition": "Rosuvastatin Calcium 10mg",
+            "strength": "10mg",
+            "dosageForm": "Tablet",
+            "availability": "low-stock",
+            "stockCount": 8,
+            "expiryDate": "2026-09-20",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_003",
+              "pharmacyName": "Wellness Forever",
+              "distance": "2.1 km"
+            }
+          }
+        ],
+        "selectedGenericId": "gen_001_a",
+        "approval": "pending"
+      },
+      {
+        "id": "med_002",
+        "prescribedName": "Nexium 40mg (Esomeprazole)",
+        "brandedPrice": 620,
+        "composition": "Esomeprazole Magnesium 40mg",
+        "strength": "40mg",
+        "dosageForm": "Tablet",
+        "extractedText": "Tab Nexium 40mg",
+        "confidence": 0.92,
+        "genericAlternatives": [
+          {
+            "id": "gen_002_a",
+            "name": "Esomeprazole 40mg (Esoz)",
+            "price": 95,
+            "manufacturer": "Dr. Reddy's Laboratories",
+            "composition": "Esomeprazole Magnesium 40mg",
+            "strength": "40mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 200,
+            "expiryDate": "2027-01-10",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_001",
+              "pharmacyName": "MedPlus",
+              "distance": "0.5 km"
+            }
+          },
+          {
+            "id": "gen_002_b",
+            "name": "Esomeprazole 40mg (Esofag)",
+            "price": 110,
+            "manufacturer": "Lupin Limited",
+            "composition": "Esomeprazole Magnesium 40mg",
+            "strength": "40mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 120,
+            "expiryDate": "2026-11-25",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_004",
+              "pharmacyName": "1mg Pharmacy",
+              "distance": "0.8 km"
+            }
+          },
+          {
+            "id": "gen_002_c",
+            "name": "Esomeprazole 40mg (Nexocas)",
+            "price": 125,
+            "manufacturer": "Cadila Healthcare",
+            "composition": "Esomeprazole Magnesium 40mg",
+            "strength": "40mg",
+            "dosageForm": "Tablet",
+            "availability": "out-of-stock",
+            "stockCount": 0,
+            "expiryDate": null,
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_005",
+              "pharmacyName": "NetMeds",
+              "distance": "1.5 km"
+            }
+          }
+        ],
+        "selectedGenericId": "gen_002_a",
+        "approval": "pending"
+      },
+      {
+        "id": "med_003",
+        "prescribedName": "Januvia 100mg (Sitagliptin)",
+        "brandedPrice": 4200,
+        "composition": "Sitagliptin Phosphate 100mg",
+        "strength": "100mg",
+        "dosageForm": "Tablet",
+        "extractedText": "Tab Januvia 100mg",
+        "confidence": 0.98,
+        "genericAlternatives": [
+          {
+            "id": "gen_003_a",
+            "name": "Sitagliptin 100mg (Zita)",
+            "price": 750,
+            "manufacturer": "Glenmark Pharmaceuticals",
+            "composition": "Sitagliptin Phosphate 100mg",
+            "strength": "100mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 45,
+            "expiryDate": "2027-05-30",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_002",
+              "pharmacyName": "Apollo Pharmacy",
+              "distance": "1.2 km"
+            }
+          },
+          {
+            "id": "gen_003_b",
+            "name": "Sitagliptin 100mg (Sitagen)",
+            "price": 820,
+            "manufacturer": "Mankind Pharma",
+            "composition": "Sitagliptin Phosphate 100mg",
+            "strength": "100mg",
+            "dosageForm": "Tablet",
+            "availability": "in-stock",
+            "stockCount": 30,
+            "expiryDate": "2026-08-15",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_006",
+              "pharmacyName": "PharmEasy",
+              "distance": "2.5 km"
+            }
+          },
+          {
+            "id": "gen_003_c",
+            "name": "Sitagliptin 100mg (Istavel)",
+            "price": 890,
+            "manufacturer": "Sun Pharmaceutical",
+            "composition": "Sitagliptin Phosphate 100mg",
+            "strength": "100mg",
+            "dosageForm": "Tablet",
+            "availability": "low-stock",
+            "stockCount": 5,
+            "expiryDate": "2026-12-05",
+            "pharmacyInfo": {
+              "pharmacyId": "pharm_007",
+              "pharmacyName": "Tata 1mg",
+              "distance": "3.0 km"
+            }
+          }
+        ],
+        "selectedGenericId": "gen_003_a",
+        "approval": "pending"
+      }
+    ],
+    "summary": {
+      "totalMedicinesFound": 3,
+      "totalBrandedCost": 5670,
+      "totalGenericCost": 965,
+      "totalPotentialSavings": 4705,
+      "savingsPercentage": 83.0,
+      "processingTime": "2.3 seconds"
+    },
+    "metadata": {
+      "ocrEngine": "Tesseract 5.2",
+      "ocrConfidence": 0.95,
+      "imageQuality": "high",
+      "processingTimestamp": "2025-08-08T14:30:22Z",
+      "apiVersion": "v1.2.3"
+    }
+  }
+}
