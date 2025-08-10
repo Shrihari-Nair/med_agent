@@ -1,23 +1,7 @@
-#!/usr/bin/env python3
-"""
-Medicine Extraction Agent
-AI agent that extracts medicine names and quantities from text content.
-Enhanced with fuzzy search capabilities for better typo handling.
-"""
-
 from crewai import Agent, Task, Crew
 from langchain_google_genai import ChatGoogleGenerativeAI
 import json
-import re
 import os
-
-# Add fuzzy search import for typo handling
-try:
-    from fuzzy_medicine_search import FuzzyMedicineSearch
-    FUZZY_SEARCH_AVAILABLE = True
-except ImportError:
-    FUZZY_SEARCH_AVAILABLE = False
-    print("⚠️  Fuzzy search not available - using exact matching only")
 
 class MedicineExtractionAgent:
     """AI agent for extracting medicine names and quantities from text."""
@@ -128,10 +112,7 @@ class MedicineExtractionAgent:
                                 'name': str(medicine['name']).strip(),
                                 'quantity': str(medicine['quantity']).strip()
                             })
-                    
-                    # ENHANCEMENT: Apply fuzzy search to improve medicine names
-                    enhanced_medicines = self._enhance_with_fuzzy_search(validated_medicines)
-                    return json.dumps({"medicines": enhanced_medicines})
+                    return json.dumps({"medicines": validated_medicines})
                 else:
                     return json.dumps({"medicines": []})
                     
@@ -141,64 +122,4 @@ class MedicineExtractionAgent:
                 
         except Exception as e:
             print(f"Error during extraction: {str(e)}")
-            return json.dumps({"medicines": []})
-    
-    def _enhance_with_fuzzy_search(self, medicines):
-        """
-        Enhance extracted medicines with fuzzy search to handle typos.
-        This is a safe enhancement that only improves results.
-        
-        Args:
-            medicines (list): List of extracted medicines
-            
-        Returns:
-            list: Enhanced medicines with corrected names where possible
-        """
-        if not FUZZY_SEARCH_AVAILABLE:
-            return medicines
-        
-        enhanced_medicines = []
-        fuzzy_searcher = FuzzyMedicineSearch()
-        
-        for medicine in medicines:
-            medicine_name = medicine['name']
-            quantity = medicine['quantity']
-            
-            try:
-                # Try fuzzy search to see if we can find a better match
-                search_results = fuzzy_searcher.search_with_suggestions(medicine_name, limit=1)
-                
-                if (search_results['matches'] and 
-                    search_results['confidence'] in ['high', 'medium'] and
-                    search_results['matches'][0]['similarity_score'] >= 85):
-                    
-                    # Found a high-confidence match, use the corrected name
-                    corrected_name = search_results['matches'][0]['name']
-                    
-                    if corrected_name.lower() != medicine_name.lower():
-                        print(f"✅ Fuzzy search enhanced: '{medicine_name}' → '{corrected_name}'")
-                    
-                    enhanced_medicines.append({
-                        'name': corrected_name,
-                        'quantity': quantity,
-                        'original_name': medicine_name if corrected_name.lower() != medicine_name.lower() else None,
-                        'fuzzy_enhanced': corrected_name.lower() != medicine_name.lower()
-                    })
-                else:
-                    # No good match found, keep original
-                    enhanced_medicines.append({
-                        'name': medicine_name,
-                        'quantity': quantity,
-                        'fuzzy_enhanced': False
-                    })
-                    
-            except Exception as e:
-                print(f"Warning: Fuzzy search failed for '{medicine_name}': {e}")
-                # If fuzzy search fails, keep original
-                enhanced_medicines.append({
-                    'name': medicine_name,
-                    'quantity': quantity,
-                    'fuzzy_enhanced': False
-                })
-        
-        return enhanced_medicines 
+            return json.dumps({"medicines": []}) 

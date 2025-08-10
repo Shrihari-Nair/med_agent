@@ -18,6 +18,9 @@ from pdf_reader import PDFReader
 from medicine_agent import MedicineExtractionAgent
 from alternative_suggestion_agent import AlternativeSuggestionAgent
 
+# Import the new fuzzy search module (safe addition)
+from fuzzy_medicine_search import FuzzyMedicineSearch, search_medicine_fuzzy
+
 app = FastAPI(title="Medicine Alternative API", version="1.0.0")
 
 # Add CORS middleware for frontend
@@ -199,6 +202,121 @@ async def serve_frontend_routes(path: str):
             return FileResponse(str(index_file))
     
     raise HTTPException(status_code=404, detail="File not found")
+
+# ============================================================================
+# NEW FUZZY SEARCH ENDPOINTS (Safe additions - don't affect existing functionality)
+# ============================================================================
+
+@app.get("/api/search/fuzzy/{medicine_name}")
+async def search_medicine_fuzzy_endpoint(medicine_name: str, limit: int = 5):
+    """
+    NEW: Fuzzy search for medicine names (handles typos and variations).
+    This endpoint is ADDITIONAL to existing functionality.
+    
+    Args:
+        medicine_name (str): Medicine name to search (can have typos)
+        limit (int): Maximum number of results to return
+    
+    Returns:
+        Dict: Search results with similarity scores and suggestions
+    """
+    try:
+        # Use the new fuzzy search functionality
+        results = search_medicine_fuzzy(medicine_name, limit)
+        
+        return {
+            "success": True,
+            "query": medicine_name,
+            "results": results,
+            "search_type": "fuzzy"
+        }
+        
+    except Exception as e:
+        print(f"❌ Error in fuzzy search: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "query": medicine_name,
+            "search_type": "fuzzy"
+        }
+
+@app.get("/api/search/suggestions/{partial_name}")
+async def get_medicine_suggestions(partial_name: str, limit: int = 10):
+    """
+    NEW: Get medicine name suggestions for autocomplete.
+    This endpoint is ADDITIONAL to existing functionality.
+    
+    Args:
+        partial_name (str): Partial medicine name
+        limit (int): Maximum suggestions to return
+        
+    Returns:
+        List[str]: List of suggested medicine names
+    """
+    try:
+        if len(partial_name) < 2:
+            return {
+                "success": True,
+                "query": partial_name,
+                "suggestions": [],
+                "message": "Query too short for suggestions"
+            }
+        
+        searcher = FuzzyMedicineSearch()
+        suggestions = searcher.get_suggestions(partial_name, limit)
+        
+        return {
+            "success": True,
+            "query": partial_name,
+            "suggestions": suggestions,
+            "count": len(suggestions)
+        }
+        
+    except Exception as e:
+        print(f"❌ Error getting suggestions: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "query": partial_name,
+            "suggestions": []
+        }
+
+@app.get("/api/search/enhanced/{medicine_name}")
+async def search_medicine_enhanced(medicine_name: str, limit: int = 5):
+    """
+    NEW: Enhanced search combining exact + fuzzy matching.
+    This endpoint is ADDITIONAL to existing functionality.
+    
+    Args:
+        medicine_name (str): Medicine name to search
+        limit (int): Maximum results
+        
+    Returns:
+        Dict: Enhanced search results with confidence levels
+    """
+    try:
+        searcher = FuzzyMedicineSearch()
+        results = searcher.search_with_suggestions(medicine_name, limit)
+        
+        return {
+            "success": True,
+            "query": medicine_name,
+            "results": results,
+            "search_type": "enhanced"
+        }
+        
+    except Exception as e:
+        print(f"❌ Error in enhanced search: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "query": medicine_name,
+            "search_type": "enhanced"
+        }
+
+# ============================================================================
+# END OF NEW FUZZY SEARCH ENDPOINTS
+# ============================================================================
 
 if __name__ == "__main__":
     import uvicorn
