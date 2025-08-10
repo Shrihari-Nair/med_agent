@@ -22,13 +22,13 @@ class ServerManager:
         try:
             # Kill any existing processes on port 8000
             try:
-                subprocess.run(["pkill", "-f", "uvicorn.*backend_api"], check=False)
+                subprocess.run(["pkill", "-f", "uvicorn.*backend"], check=False)
                 time.sleep(1)
             except:
                 pass
                 
             process = subprocess.Popen([
-                "python3", "-m", "uvicorn", "backend_api:app", 
+                "python3", "-m", "uvicorn", "src.api.backend:app", 
                 "--host", "0.0.0.0", "--port", "8001", "--reload"
             ])
             self.processes.append(process)
@@ -40,7 +40,7 @@ class ServerManager:
     
     def start_frontend(self):
         """Start the Vite frontend server."""
-        frontend_dir = Path("generic-saver-bot")
+        frontend_dir = Path("frontend/generic-saver-bot")
         if not frontend_dir.exists():
             print("⚠️ Frontend directory not found")
             return None
@@ -79,7 +79,7 @@ def main():
     print("=" * 60)
     
     # Check if we're in the right directory
-    if not os.path.exists("backend_api.py"):
+    if not os.path.exists("src/api/backend.py"):
         print("❌ Please run this script from the med_agent directory")
         sys.exit(1)
     
@@ -90,14 +90,14 @@ def main():
         print()
     
     # Check if database exists
-    if not os.path.exists("medicines.db"):
+    if not os.path.exists("data/medicines.db"):
         print("🗄️ Creating medicine database...")
         try:
-            subprocess.run(["python3", "create_medicine_db.py"], check=True)
+            subprocess.run(["python3", "src/database/create_db.py"], check=True)
             print("✅ Database created successfully")
         except Exception as e:
             print(f"❌ Failed to create database: {e}")
-            print("   Please run 'python3 create_medicine_db.py' manually")
+            print("   Please run 'python3 src/database/create_db.py' manually")
             sys.exit(1)
     
     manager = ServerManager()

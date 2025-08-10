@@ -7,9 +7,9 @@ Combines text extraction agent with cost-saving alternative suggestion agent.
 import sys
 import json
 import os
-from pdf_reader import PDFReader
-from medicine_agent import MedicineExtractionAgent
-from alternative_suggestion_agent import AlternativeSuggestionAgent
+from src.utils.pdf_reader import PDFReader
+from src.agents.medicine_agent import MedicineExtractionAgent
+from src.agents.alternative_suggestion_agent import AlternativeSuggestionAgent
 
 def main():
     """Main function to run the complete medicine extraction and alternative suggestion pipeline."""
@@ -81,9 +81,9 @@ def main():
         print("\n💰 STEP 3: Finding cost-effective alternatives...")
         
         # Check if database exists
-        if not os.path.exists("medicines.db"):
+        if not os.path.exists("data/medicines.db"):
             print("❌ Medicine database not found!")
-            print("   Please create the database first: python create_medicine_db.py")
+            print("   Please create the database first: python src/database/create_db.py")
             sys.exit(1)
         
         alternative_agent = AlternativeSuggestionAgent()

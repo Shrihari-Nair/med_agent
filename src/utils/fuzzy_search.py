@@ -9,7 +9,7 @@ import re
 import sqlite3
 from typing import List, Dict, Tuple, Optional
 from fuzzywuzzy import fuzz, process
-from medicine_database_manager import MedicineDatabaseManager
+from src.database.manager import MedicineDatabaseManager
 
 class FuzzyMedicineSearch:
     """
@@ -17,7 +17,7 @@ class FuzzyMedicineSearch:
     Safe to use alongside existing exact search functionality.
     """
     
-    def __init__(self, db_path: str = "medicines.db"):
+    def __init__(self, db_path: str = "data/medicines.db"):
         """Initialize fuzzy search with database connection."""
         self.db_path = db_path
         self.db_manager = MedicineDatabaseManager(db_path)

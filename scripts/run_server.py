@@ -31,14 +31,14 @@ def main():
         sys.exit(1)
     
     # Check if database exists
-    if not os.path.exists("medicines.db"):
+    if not os.path.exists("data/medicines.db"):
         print("🗄️ Creating medicine database...")
-        if not run_command("python3 create_medicine_db.py", description="Creating medicine database"):
-            print("❌ Failed to create database. Please run 'python3 create_medicine_db.py' manually.")
+        if not run_command("python3 src/database/create_db.py", description="Creating medicine database"):
+            print("❌ Failed to create database. Please run 'python3 src/database/create_db.py' manually.")
             sys.exit(1)
     
     # Build frontend
-    frontend_dir = Path("generic-saver-bot")
+    frontend_dir = Path("frontend/generic-saver-bot")
     if frontend_dir.exists():
         print("🔨 Building frontend...")
         if not run_command("npm install", cwd=str(frontend_dir), description="Installing frontend dependencies"):

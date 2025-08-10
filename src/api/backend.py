@@ -14,12 +14,12 @@ import json
 from pathlib import Path
 
 # Import our existing pipeline components
-from pdf_reader import PDFReader
-from medicine_agent import MedicineExtractionAgent
-from alternative_suggestion_agent import AlternativeSuggestionAgent
+from src.utils.pdf_reader import PDFReader
+from src.agents.medicine_agent import MedicineExtractionAgent
+from src.agents.alternative_suggestion_agent import AlternativeSuggestionAgent
 
 # Import the new fuzzy search module (safe addition)
-from fuzzy_medicine_search import FuzzyMedicineSearch, search_medicine_fuzzy
+from src.utils.fuzzy_search import FuzzyMedicineSearch, search_medicine_fuzzy
 
 app = FastAPI(title="Medicine Alternative API", version="1.0.0")
 
@@ -82,7 +82,7 @@ def process_prescription_file(file_path: str) -> dict:
         print(f"✅ Found {len(medicines)} medicines")
         
         # Step 3: Check if database exists
-        if not os.path.exists("medicines.db"):
+        if not os.path.exists("data/medicines.db"):
             raise Exception("Medicine database not found. Please create it first.")
         
         # Step 4: Find alternatives using AI agent

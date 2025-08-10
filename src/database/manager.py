@@ -11,7 +11,7 @@ import json
 class MedicineDatabaseManager:
     """Manages medicine database operations for finding alternatives."""
     
-    def __init__(self, db_path: str = "medicines.db"):
+    def __init__(self, db_path: str = "data/medicines.db"):
         self.db_path = db_path
         self.conn = None
         self.cursor = None

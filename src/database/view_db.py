@@ -11,7 +11,7 @@ from typing import List, Tuple
 class MedicineDatabaseViewer:
     """Viewer for exploring the medicine database."""
     
-    def __init__(self, db_path: str = "medicines.db"):
+    def __init__(self, db_path: str = "data/medicines.db"):
         self.db_path = db_path
         self.conn = None
         self.cursor = None
@@ -263,13 +263,13 @@ def main():
     if len(sys.argv) > 1:
         db_path = sys.argv[1]
     else:
-        db_path = "medicines.db"
+        db_path = "data/medicines.db"
     
     viewer = MedicineDatabaseViewer(db_path)
     
     if not viewer.connect():
         print(f"❌ Could not connect to database: {db_path}")
-        print("   Make sure the database exists. Run 'python create_medicine_db.py' first.")
+        print("   Make sure the database exists. Run 'python src/database/create_db.py' first.")
         return
     
     print(f"✅ Connected to database: {db_path}")

@@ -6,7 +6,7 @@ Finds cost-effective alternatives for medicines using CrewAI and database lookup
 
 from crewai import Agent, Task, Crew
 from langchain_google_genai import ChatGoogleGenerativeAI
-from medicine_database_manager import MedicineDatabaseManager
+from src.database.manager import MedicineDatabaseManager
 import json
 import os
 from typing import List, Dict, Any
@@ -14,7 +14,7 @@ from typing import List, Dict, Any
 class AlternativeSuggestionAgent:
     """AI agent for finding cost-effective medicine alternatives."""
     
-    def __init__(self, api_key=None, db_path="medicines.db"):
+    def __init__(self, api_key=None, db_path="data/medicines.db"):
         """
         Initialize the alternative suggestion agent.
         
