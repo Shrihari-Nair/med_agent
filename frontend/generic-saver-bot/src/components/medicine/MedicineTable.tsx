@@ -17,6 +17,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MedicineAlternative } from "@/types/api";
+import { EnhancedMedicineInfo } from "@/types/enhanced-medicine";
+import { EnhancedMedicineInfoDisplay } from "./EnhancedMedicineInfo";
 
 export type GenericAlternative = MedicineAlternative & {
   id: string;
@@ -39,13 +41,14 @@ export interface MedicineTableProps {
   onApprove: (id: string) => void;
   onDecline: (id: string) => void;
   onAlternativeSelect: (medicineId: string, alternativeId: string) => void;
+  databaseInfo?: Map<string, EnhancedMedicineInfo> | null;
 }
 
 const currency = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 const pct = (x: number) => `${x.toFixed(0)}%`;
 
-export function MedicineTable({ rows, onApprove, onDecline, onAlternativeSelect }: MedicineTableProps) {
+export function MedicineTable({ rows, onApprove, onDecline, onAlternativeSelect, databaseInfo }: MedicineTableProps) {
   return (
     <Table className="bg-card rounded-lg border">
       <TableCaption className="text-xs">Review suggested substitutions and approve for savings.</TableCaption>
@@ -99,7 +102,6 @@ export function MedicineTable({ rows, onApprove, onDecline, onAlternativeSelect 
                             <SelectItem 
                               key={alternative.id} 
                               value={alternative.id}
-                              disabled={alternative.availability === "out-of-stock"}
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex-1">
@@ -131,6 +133,27 @@ export function MedicineTable({ rows, onApprove, onDecline, onAlternativeSelect 
                         <div className="text-xs text-muted-foreground">
                           Selected: {selectedAlternative.name} • {currency(selectedAlternative.price)} • Stock: {selectedAlternative.stock_quantity}
                         </div>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Enhanced Database Information */}
+                  {databaseInfo && (
+                    <>
+                      {/* Original Medicine Database Info */}
+                      {databaseInfo.has(r.name) && (
+                        <EnhancedMedicineInfoDisplay 
+                          medicineInfo={databaseInfo.get(r.name)!}
+                          isAlternative={false}
+                        />
+                      )}
+                      
+                      {/* Selected Alternative Database Info */}
+                      {selectedAlternative && databaseInfo.has(selectedAlternative.name) && (
+                        <EnhancedMedicineInfoDisplay 
+                          medicineInfo={databaseInfo.get(selectedAlternative.name)!}
+                          isAlternative={true}
+                        />
                       )}
                     </>
                   )}

@@ -9,7 +9,19 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Upload, FileText, DollarSign, CheckCircle2, AlertCircle, Pill, TrendingDown, Shield, Clock } from "lucide-react";
-import { BackendResponse, ProcessedMedicine } from "@/types/api";
+import { 
+  BackendResponse, 
+  ProcessedMedicine, 
+  ApiResponse, 
+  EnhancedBackendResponse,
+  isEnhancedResponse,
+  isLegacyResponse 
+} from "@/types/api";
+import { SafetyAnalysis } from "@/components/medicine/SafetyAnalysis";
+import { EnhancedMedicineCard } from "@/components/medicine/EnhancedMedicineCard";
+import { convertEnhancedToLegacyFormat, extractSafetySummary } from "@/utils/responseConverter";
+import { EnhancedMedicineInfo } from "@/types/enhanced-medicine";
+import { ProcessingIndicator } from "@/components/ui/processing-indicator";
 
 // Helper function to convert backend response to frontend format
 const convertBackendToFrontend = (backendData: BackendResponse): MedicineRow[] => {
@@ -139,6 +151,14 @@ const sampleRows: MedicineRow[] = [
 
 const Index = () => {
   const [rows, setRows] = useState<MedicineRow[]>([]);
+  const [enhancedResponse, setEnhancedResponse] = useState<EnhancedBackendResponse | null>(null);
+  const [safetySummary, setSafetySummary] = useState<{
+    riskLevel: 'LOW_RISK' | 'MODERATE_RISK' | 'HIGH_RISK';
+    criticalWarnings: string[];
+    requiresConsultation: boolean;
+    summary: string;
+  } | null>(null);
+  const [databaseInfo, setDatabaseInfo] = useState<Map<string, EnhancedMedicineInfo> | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showFinalList, setShowFinalList] = useState(false);
@@ -217,15 +237,33 @@ const Index = () => {
 
   const handleConfirmAndContinue = () => {
     setShowFinalList(true);
-    toast.success("Purchase successful! 🎉", {
-      description: "Your medicine order has been confirmed.",
-      duration: 5000
-    });
+    const hasApprovedAlternatives = approved.length > 0;
+    const hasDeclinedOriginals = declined.length > 0;
+    
+    if (hasApprovedAlternatives) {
+      toast.success("Purchase successful! 🎉", {
+        description: "Your medicine order has been confirmed with approved alternatives.",
+        duration: 5000
+      });
+    } else if (hasDeclinedOriginals || noAlternatives.length > 0) {
+      toast.success("Order confirmed! 📋", {
+        description: "Continuing with original prescription as requested.",
+        duration: 5000
+      });
+    } else {
+      toast.success("Purchase successful! 🎉", {
+        description: "Your medicine order has been confirmed.",
+        duration: 5000
+      });
+    }
   };
 
   const handleStartNewPrescription = () => {
     setShowFinalList(false);
     setRows([]);
+    setEnhancedResponse(null);
+    setSafetySummary(null);
+    setDatabaseInfo(null);
     setFileName("");
     // Scroll to top for better UX
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -238,7 +276,9 @@ const Index = () => {
   const handleFile = (file?: File) => {
     if (!file) return;
     setFileName(file.name);
-    setIsProcessing(true);
+    
+    // Add slight delay to prevent flicker for fast responses
+    setTimeout(() => setIsProcessing(true), 100);
     
     // Real API call to backend
     console.log('📤 Starting file upload:', file.name, file.type, file.size);
@@ -256,16 +296,45 @@ const Index = () => {
       }
       return response.json();
     })
-    .then((data: BackendResponse) => {
+    .then((data: ApiResponse) => {
       console.log('✅ Processing successful:', data);
-      const transformedRows = convertBackendToFrontend(data);
-      setRows(transformedRows);
-      setIsProcessing(false);
       
-      toast.success("Prescription processed successfully!", {
-        description: `Found ${data.summary.total_medicines} medicines with ${data.summary.total_alternatives_found} alternatives available.`,
-        duration: 5000
-      });
+      if (isEnhancedResponse(data)) {
+        // Handle enhanced response with multi-database intelligence
+        console.log('🔬 Enhanced response detected with medical intelligence');
+        setEnhancedResponse(data);
+        
+        // Convert enhanced response to legacy format for workflow compatibility
+        const { rows: convertedRows, databaseInfo: dbInfo } = convertEnhancedToLegacyFormat(data);
+        setRows(convertedRows);
+        setDatabaseInfo(dbInfo);
+        
+        // Extract safety summary
+        const safety = extractSafetySummary(data);
+        setSafetySummary(safety);
+        
+        toast.success("🧠 Enhanced Medical Intelligence Complete!", {
+          description: `AI analyzed ${data.medicine_alternatives.length} medicine(s) using 7 databases for safety, effectiveness, and cost insights.`,
+          duration: 6000
+        });
+      } else if (isLegacyResponse(data)) {
+        // Handle legacy response format
+        console.log('📊 Legacy response detected, converting to standard format');
+        const transformedRows = convertBackendToFrontend(data);
+        setRows(transformedRows);
+        setEnhancedResponse(null);
+        setSafetySummary(null);
+        setDatabaseInfo(null);
+        
+        toast.success("Prescription processed successfully!", {
+          description: `Found ${data.summary.total_medicines} medicines with ${data.summary.total_alternatives_found} alternatives available.`,
+          duration: 5000
+        });
+      } else {
+        throw new Error('Unknown response format received from server');
+      }
+      
+      setIsProcessing(false);
     })
     .catch(error => {
       console.error('❌ Processing failed:', error);
@@ -477,13 +546,29 @@ const Index = () => {
 
         <section aria-labelledby="review-substitutions">
           <h2 id="review-substitutions" className="sr-only">Review substitutions</h2>
+          {/* Safety Banner for Enhanced Intelligence */}
+          {safetySummary && (
+            <div className="mb-6">
+              <SafetyAnalysis 
+                analysis={enhancedResponse!.prescription_analysis} 
+                recommendations={enhancedResponse!.overall_recommendations} 
+              />
+            </div>
+          )}
+          
           {rows.length === 0 ? (
             <div className="rounded-lg border p-8 text-center text-muted-foreground">
               Your suggested substitutions will appear here after you upload a prescription.
             </div>
           ) : (
             <>
-              <MedicineTable rows={rows} onApprove={onApprove} onDecline={onDecline} onAlternativeSelect={onAlternativeSelect} />
+              <MedicineTable 
+                rows={rows} 
+                onApprove={onApprove} 
+                onDecline={onDecline} 
+                onAlternativeSelect={onAlternativeSelect}
+                databaseInfo={databaseInfo}
+              />
               <div className="mt-6 flex justify-end">
                 <Dialog>
                   <DialogTrigger asChild>
@@ -656,8 +741,10 @@ const Index = () => {
                       <DialogClose asChild>
                         <Button variant="secondary">Close</Button>
                       </DialogClose>
-                      {approved.length > 0 && (
-                        <Button onClick={handleConfirmAndContinue}>Confirm and continue</Button>
+                      {(approved.length > 0 || declined.length > 0 || noAlternatives.length > 0) && (
+                        <Button onClick={handleConfirmAndContinue}>
+                          {approved.length > 0 ? 'Confirm and continue' : 'Continue with original prescription'}
+                        </Button>
                       )}
                     </DialogFooter>
                   </DialogContent>
@@ -790,6 +877,9 @@ const Index = () => {
           </DialogContent>
         </Dialog>
       </main>
+      
+      {/* Processing Indicator */}
+      <ProcessingIndicator isVisible={isProcessing} keepAlive={true} />
     </div>
   );
 };
