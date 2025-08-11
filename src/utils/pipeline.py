@@ -9,7 +9,7 @@ import json
 import os
 from src.utils.pdf_reader import PDFReader
 from src.agents.medicine_agent import MedicineExtractionAgent
-from src.agents.alternative_suggestion_agent import AlternativeSuggestionAgent
+from src.agents.optimized_alternative_agent import OptimizedAlternativeSuggestionAgent
 
 def main():
     """Main function to run the complete medicine extraction and alternative suggestion pipeline."""
@@ -86,7 +86,7 @@ def main():
             print("   Please create the database first: python src/database/create_db.py")
             sys.exit(1)
         
-        alternative_agent = AlternativeSuggestionAgent()
+        alternative_agent = OptimizedAlternativeSuggestionAgent()
         print("   ✅ Alternative suggestion agent initialized")
         
         # Create input JSON for alternative agent
